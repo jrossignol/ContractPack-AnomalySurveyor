@@ -10,7 +10,7 @@ using ContractConfigurator.Parameters;
 
 namespace AnomalySurveyor
 {
-    public class MonolithParameter : ContractParameter, ParameterDelegateContainer
+    public class MonolithParameter : ContractConfiguratorParameter, ParameterDelegateContainer
     {
         public class VelocityHandler : MonoBehaviour
         {
@@ -658,9 +658,8 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
             ResetLoadDistance();
         }
 
-        protected override void OnSave(ConfigNode node)
+        protected override void OnParameterSave(ConfigNode node)
         {
-            base.OnSave(node);
             node.AddValue("monolithDiscovered", monolithDiscovered);
             node.AddValue("currentState", currentState);
             if (starJeb != null)
@@ -680,9 +679,8 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
             }
         }
 
-        protected override void OnLoad(ConfigNode node)
+        protected override void OnParameterLoad(ConfigNode node)
         {
-            base.OnLoad(node);
             monolithDiscovered = ConfigNodeUtil.ParseValue<bool>(node, "monolithDiscovered");
             currentState = ConfigNodeUtil.ParseValue<MonolithState>(node, "currentState");
             starJeb = ConfigNodeUtil.ParseValue<Vessel>(node, "starJeb", (Vessel)null);

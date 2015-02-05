@@ -1,2 +1,5 @@
+ContractPack-AnomalySurveyor 1.0.1
+- Use new parameter save/load exception handling model in Contract Configurator 0.6.2.
+
 ContractPack-AnomalySurveyor 1.0.0
 - Initial release.
