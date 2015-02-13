@@ -1,6 +1,7 @@
 ContractPack-AnomalySurveyor 1.0.1
 - Use new parameter save/load exception handling model in Contract Configurator 0.6.2.
 - Clean up titles and descriptions to reduce spoilers.
+- Remove one of the underground monoliths from Kerbin (too boring to visit).
 
 ContractPack-AnomalySurveyor 1.0.0
 - Initial release.
