@@ -2,6 +2,7 @@ ContractPack-AnomalySurveyor 1.0.1
 - Use new parameter save/load exception handling model in Contract Configurator 0.6.2.
 - Clean up titles and descriptions to reduce spoilers.
 - Remove one of the underground monoliths from Kerbin (too boring to visit).
+- Change to only need to visit one of the two Mun monoliths to trigger the Jool mission.
 
 ContractPack-AnomalySurveyor 1.0.0
 - Initial release.
