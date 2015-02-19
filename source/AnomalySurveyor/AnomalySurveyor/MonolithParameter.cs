@@ -730,7 +730,7 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                     ProgressTracking.Instance.OnLoad(progressTreeBackup);
 
                     // Complete the parameter
-                    SetComplete();
+                    SetState(ParameterState.Complete);
                 }
             }
         }
