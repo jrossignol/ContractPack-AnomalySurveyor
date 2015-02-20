@@ -1,5 +1,7 @@
 ContractPack-AnomalySurveyor 1.0.2
 - Integrate performance changes from Contract Configurator 0.6.6.
+- Fixed location of Rock Arch #2 on the Mun (thanks Sonny_Jim).
+- Balance pass for contract rewards.
 
 ContractPack-AnomalySurveyor 1.0.1
 - Use new parameter save/load exception handling model in Contract Configurator 0.6.2.
