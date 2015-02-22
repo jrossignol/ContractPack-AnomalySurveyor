@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.0.3
+- Minor fixes to Bop mission.
+
 ContractPack-AnomalySurveyor 1.0.2
 - Integrate performance changes from Contract Configurator 0.6.6.
 - Fixed location of Rock Arch #2 on the Mun (thanks Sonny_Jim).
