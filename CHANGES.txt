@@ -1,6 +1,6 @@
 ContractPack-AnomalySurveyor 1.0.3
 - Fix contract rewards that weren't being correctly adjusted for presence of SCANsta.
-- Minor fixes to Bop mission.
+- Minor fixes to waypoint locations.
 
 ContractPack-AnomalySurveyor 1.0.2
 - Integrate performance changes from Contract Configurator 0.6.6.
