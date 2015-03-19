@@ -40,7 +40,18 @@ namespace AnomalySurveyor
                         {
                             x = 0.0f;
                         }
-                        param.starJeb.SetPosition(param.Destination.Value + direction * param.startDistance * x * x);
+
+                        if (param.starJeb.altitude < param.starJeb.terrainAltitude + 10.0f)
+                        {
+                            CelestialBody body = param.DestinationBody;
+                            double lat = body.GetLatitude(param.starJeb.transform.position);
+                            double lon = body.GetLongitude(param.starJeb.transform.position);
+                            param.starJeb.SetPosition(body.GetWorldSurfacePosition(lat, lon, param.starJeb.terrainAltitude + 10.0f));
+                        }
+                        else
+                        {
+                            param.starJeb.SetPosition(param.Destination.Value + direction * param.startDistance * x * x);
+                        }
                     }
 
                     if (param.Destination != null ||
@@ -52,6 +63,13 @@ namespace AnomalySurveyor
                         {
                             lastAdjustment = Time.frameCount;
                             param.starJeb.ChangeWorldVelocity(-param.starJeb.GetSrfVelocity());
+
+                            // Keep us safe!
+                            foreach (Part p in param.starJeb.parts)
+                            {
+                                p.crashTolerance = 10000000.0f;
+                            }
+                            CheatOptions.NoCrashDamage = true;
                         }
                     }
                 }
@@ -294,17 +312,19 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                     {
                         // Visit Dres
                         CelestialBody dres = FlightGlobals.Bodies.Where(b => b.name == "Dres").First();
-                        float distance = 4.0f * (float)dres.Radius;
-                        starJeb.SetPosition(dres.transform.position + new Vector3(distance, 0.0f, 0.0f));
 
                         // Determine which side the sun is on - makes for a better show
                         CelestialBody sun = FlightGlobals.Bodies.Where(b => b.name == "Sun").First();
                         Vector3 sunnySide = sun.transform.position - dres.transform.position;
                         sunnySide.x = 0.0f;
-                        sunnySide.y = Math.Abs(sunnySide.z); // Move across the top of the planet
-                        sunnySide.Normalize();
+                        sunnySide.y = 1; // Move across the top of the planet
+                        sunnySide.z = Math.Sign(sunnySide.z);
 
-                        velocity = (dres.transform.position - starJeb.transform.position + sunnySide * ((float)dres.Radius + 6000)).normalized;
+                        // Set position for starjeb
+                        float distance = 4.0f * (float)dres.Radius;
+                        starJeb.SetPosition(dres.transform.position + new Vector3(distance, (float)dres.Radius, (float)dres.Radius * sunnySide.z));
+
+                        velocity = (dres.transform.position - starJeb.transform.position + sunnySide * ((float)dres.Radius)).normalized;
                         velocity *= distance / 3.0f;
                         LoggingUtil.LogVerbose(this, "kick magnitude will be: " + velocity);
                         starJeb.SetWorldVelocity(dres.getRFrmVel(starJeb.transform.position));
@@ -439,9 +459,10 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                     {
                         CelestialBody eve = FlightGlobals.Bodies.Where(b => b.name == "Eve").First();
                         velocity = null;
+                        Vector3 targetPosition = Destination.Value;
                         Vector3 normal = eve.GetSurfaceNVector(eveLatitude, eveLongitude);
                         startDistance = 10000000f;
-                        Vector3 start = Destination.Value + normal * startDistance;
+                        Vector3 start = targetPosition + normal * startDistance;
 
                         starJeb.SetPosition(start);
                         nextState();
@@ -466,7 +487,7 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                     return false;
                 case MonolithState.FULL_OF_STARS_EVE3:
                     // Wait until we've held the position for a split second
-                    if (Time.fixedTime - stepTime >= 8.3f)
+                    if (Time.fixedTime - stepTime >= 9.3f)
                     {
                         nextState();
                     }
@@ -534,6 +555,8 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                     return false;
                 case MonolithState.FULL_OF_STARS_KERBIN1:
                     {
+                        CheatOptions.NoCrashDamage = false;
+
                         // Start between the sun and Kerbin
                         CelestialBody kerbin = FlightGlobals.Bodies.Where(b => b.name == "Kerbin").First();
                         CelestialBody sun = FlightGlobals.Bodies.Where(b => b.name == "Sun").First();
@@ -627,7 +650,7 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                 double[][] points = new double[][] {
                     new double[] { 7.39669784381863, 3.1827231256902 },
                     new double[] { 5.90113274698536, -92.0459544666453 },
-                    new double[] { 1.2027962240675, 221.561302155377 }
+                    new double[] { 1.200368332465, 221.8829976215 }
                 };
 
                 float minDistance = float.MaxValue;
@@ -654,7 +677,7 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
             Vector3d radialVector = new Vector3d(Math.Cos(latRads) * Math.Cos(lonRads), Math.Sin(latRads), Math.Cos(latRads) * Math.Sin(lonRads));
             double height = Math.Max(eve.pqsController.GetSurfaceHeight(radialVector) - eve.pqsController.radius, 0.0);
 
-            return eve.GetWorldSurfacePosition(eveLatitude, eveLongitude, height + 2.0f);
+            return eve.GetWorldSurfacePosition(eveLatitude, eveLongitude, height + 10.0f);
         }
 
         protected override void OnRegister()

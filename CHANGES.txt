@@ -3,6 +3,7 @@ ContractPack-AnomalySurveyor 1.0.5
 - Improvements to Island Airfield and Pyramids to work in RSS rescaled Kerbin.
 - Jool Monolith
     - Improved logic for selection of EVA Kerbal to prevent issues.
+    - Improved survivability (far less likely to crash into a planet and die).
 
 ContractPack-AnomalySurveyor 1.0.4
 - Emergency recompile to make compatible with Contract Configurator 0.7.0.
