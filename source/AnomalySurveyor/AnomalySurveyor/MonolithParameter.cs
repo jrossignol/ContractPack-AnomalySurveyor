@@ -104,7 +104,9 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
 
         private Vessel monolith = null;
         public Vessel starJeb = null;
+        public Vessel candidate = null;
         public string starJebName = "";
+        public string candidateName = "";
         private bool loadDistanceChanged = false;
         private float origLoadDistance;
         private float origUnloadDistance;
@@ -162,7 +164,7 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
             if (ParameterCount < 2 && currentState >= MonolithState.EVA)
             {
                 LoggingUtil.LogVerbose(this, "Adding approach parameter...");
-                AddParameter(new ParameterDelegate<MonolithParameter>("Approach the monolith with " + starJebName,
+                AddParameter(new ParameterDelegate<MonolithParameter>("Approach the monolith with " + candidateName,
                     x => CheckParameters(MonolithState.EVA)));
             }
 
@@ -181,7 +183,8 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
             }
 
             // StarJeb not active vessel
-            if (starJeb != null && FlightGlobals.ActiveVessel != starJeb)
+            if (starJeb != null && FlightGlobals.ActiveVessel != starJeb ||
+                candidate != null && FlightGlobals.ActiveVessel != candidate)
             {
                 stepTime = Time.fixedTime;
                 return false;
@@ -199,21 +202,24 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
             {
                 case MonolithState.STARTED:
                     // Look for an eva
-                    if (FlightGlobals.ActiveVessel.vesselType == VesselType.EVA)
+                    if (FlightGlobals.ActiveVessel != null && FlightGlobals.ActiveVessel.vesselType == VesselType.EVA)
                     {
-                        starJeb = FlightGlobals.ActiveVessel;
-                        starJebName = starJeb.vesselName;
-                        LoggingUtil.LogVerbose(this, "Got an eva, starJeb = " + starJeb.vesselName);
+                        candidate = FlightGlobals.ActiveVessel;
+                        candidateName = candidate.vesselName;
+                        LoggingUtil.LogVerbose(this, "Got an eva, starJeb = " + candidate.vesselName);
                         return true;
                     }
                     return false;
                 case MonolithState.EVA:
                     {
                         Vessel discovery = ContractVesselTracker.Instance.GetAssociatedVessel("Discovery One");
-                        float discoveryDistance = discovery == null ? 10000 : Vector3.Distance(discovery.transform.position, starJeb.transform.position);
+                        float discoveryDistance = discovery == null ? 10000 : Vector3.Distance(discovery.transform.position, candidate.transform.position);
 
                         if (distance < 10000 && discoveryDistance > distance && Time.fixedTime - stepTime > 10.0f || distance < MONOLITH_TOO_CLOSE)
                         {
+                            starJeb = candidate;
+                            starJebName = candidateName;
+                            candidate = null;
                             return true;
                         }
                     }
@@ -651,12 +657,71 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
             return eve.GetWorldSurfacePosition(eveLatitude, eveLongitude, height + 2.0f);
         }
 
+        protected override void OnRegister()
+        {
+            base.OnRegister();
+            GameEvents.onCrewTransferred.Add(new EventData<GameEvents.HostedFromToAction<ProtoCrewMember, Part>>.OnEvent(OnCrewTransferred));
+        }
+
         protected override void OnUnregister()
         {
             base.OnUnregister();
+            GameEvents.onCrewTransferred.Remove(new EventData<GameEvents.HostedFromToAction<ProtoCrewMember, Part>>.OnEvent(OnCrewTransferred));
 
             ResetLoadDistance();
         }
+
+        protected virtual void OnCrewTransferred(GameEvents.HostedFromToAction<ProtoCrewMember, Part> a)
+        {
+            // Note that the VesselType of the Kerbal coming out is set to debris initially!  This is
+            // probably a bug in stock, and is unreliable in my opinion.  But we can't check that the
+            // other is a vessel, as it may be a station or something else.  So we check for both
+            // debris or eva, in case this behaviour changes in future.
+
+            // Kerbal going on EVA
+            if (a.to.vesselType == VesselType.EVA || a.to.vesselType == VesselType.Debris)
+            {
+                NewEVA(a.from.vessel, a.to.vessel);
+            }
+
+            // Kerbal coming home
+            if (a.from.vesselType == VesselType.EVA || a.from.vesselType == VesselType.Debris)
+            {
+                ReturnEVA(a.to.vessel, a.from.vessel);
+            }
+        }
+
+        protected void NewEVA(Vessel parent, Vessel eva)
+        {
+            if (currentState <= MonolithState.EVA && eva != null && starJeb == null)
+            {
+                candidate = eva;
+                candidateName = eva.vesselName;
+
+                // Force a display update
+                ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
+            }
+        }
+
+        protected void ReturnEVA(Vessel parent, Vessel eva)
+        {
+            if (currentState <= MonolithState.EVA && eva != null && candidate == eva)
+            {
+                candidate = null;
+                candidateName = "";
+                currentState = MonolithState.STARTED;
+
+                // Remove the approach parameter, as the name may change
+                if (ParameterCount == 2)
+                {
+                    RemoveParameter(GetParameter(1));
+                }
+
+                // Force a display update
+                ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
+            }
+        }
+
 
         protected override void OnParameterSave(ConfigNode node)
         {
@@ -667,6 +732,11 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                 node.AddValue("starJeb", starJeb.id);
             }
             node.AddValue("starJebName", starJebName);
+            if (candidate != null)
+            {
+                node.AddValue("candidate", candidate.id);
+            }
+            node.AddValue("candidateName", candidateName);
             if (velocity != null)
             {
                 node.AddValue("velocity.x", velocity.Value.x);
@@ -684,7 +754,9 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
             monolithDiscovered = ConfigNodeUtil.ParseValue<bool>(node, "monolithDiscovered");
             currentState = ConfigNodeUtil.ParseValue<MonolithState>(node, "currentState");
             starJeb = ConfigNodeUtil.ParseValue<Vessel>(node, "starJeb", (Vessel)null);
+            candidate = ConfigNodeUtil.ParseValue<Vessel>(node, "candidate", starJeb);
             starJebName = ConfigNodeUtil.ParseValue<string>(node, "starJebName", "");
+            candidateName = ConfigNodeUtil.ParseValue<string>(node, "candidateName", "");
             if (node.HasValue("velocity.x"))
             {
                 float x = ConfigNodeUtil.ParseValue<float>(node, "velocity.x");
