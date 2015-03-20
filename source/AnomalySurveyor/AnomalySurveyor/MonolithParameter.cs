@@ -610,10 +610,14 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                     if (Time.fixedTime - stepTime < 15.0f)
                     {
                         CelestialBody kerbin = FlightGlobals.Bodies.Where(b => b.name == "Kerbin").First();
+                        Vector3 camDirection = starJeb.transform.position + (starJeb.transform.position - kerbin.transform.position).normalized;
+
                         starJeb.rigidbody.angularVelocity = Vector3.zero;
                         starJeb.angularVelocity = Vector3.zero;
                         starJeb.rigidbody.angularVelocity = Vector3.zero;
-                        starJeb.transform.localRotation = Quaternion.Euler(180.0f, -25.0f, 90.0f);
+                        //starJeb.transform.localRotation = Quaternion.Euler(180.0f, -25.0f, 90.0f);
+                        starJeb.transform.localRotation = FlightCamera.fetch.transform.localRotation *
+                            Quaternion.AngleAxis(90.0f, FlightCamera.fetch.transform.forward);
                     }
                     else
                     {
@@ -817,6 +821,12 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                 {
                     nextState();
                     ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
+                }
+
+                if (ChildChanged)
+                {
+                    ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
+                    ChildChanged = false;
                 }
 
                 if (currentState == MonolithState.FINISHED)
