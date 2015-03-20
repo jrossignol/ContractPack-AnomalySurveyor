@@ -4,6 +4,7 @@ ContractPack-AnomalySurveyor 1.0.5
 - Jool Monolith
     - Improved logic for selection of EVA Kerbal to prevent issues.
     - Improved survivability (far less likely to crash into a planet and die).
+- Added notes to Mun Monoliths (only available in Contract Configurator 0.7.1).
 
 ContractPack-AnomalySurveyor 1.0.4
 - Emergency recompile to make compatible with Contract Configurator 0.7.0.
