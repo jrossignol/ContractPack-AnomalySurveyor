@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.0.6
+- Fixed text in Kerbin Monolith contract (thanks khearn).
+
 ContractPack-AnomalySurveyor 1.0.5
 - Minimum version of Contract Configurator is now 0.7.0
 - Improvements to Island Airfield and Pyramids to work in RSS rescaled Kerbin.
