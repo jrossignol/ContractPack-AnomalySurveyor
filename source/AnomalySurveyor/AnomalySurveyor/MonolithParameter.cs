@@ -54,8 +54,7 @@ namespace AnomalySurveyor
                         }
                     }
 
-                    if (param.Destination != null ||
-                        param.currentState >= MonolithState.FULL_OF_STARS_KERBIN1 && param.currentState <= MonolithState.FULL_OF_STARS_KERBIN4)
+                    if (param.Destination != null)
                     {
                         // Adjust the velocity, but only every frame - adjusting this too frequently
                         // seems to cause the velocity to resonate back and forth
@@ -96,38 +95,42 @@ namespace AnomalySurveyor
             FULL_OF_STARS_EELOO1,
             FULL_OF_STARS_EELOO2,
             FULL_OF_STARS_EELOO3,
+            // One day, I may try to get this stuff working again, but it's just so buggy!
+            //FULL_OF_STARS_EVE1,
+            //FULL_OF_STARS_EVE2,
+            //FULL_OF_STARS_EVE3,
+            //FULL_OF_STARS_EVE4,
+            //FULL_OF_STARS_EVE5,
+            //FULL_OF_STARS_EVE6,
+            FULL_OF_STARS_KERBIN1,
+            FULL_OF_STARS_KERBIN2,
+            FULL_OF_STARS_KERBIN3,
+            FULL_OF_STARS_KERBIN4,
+            FULL_OF_STARS_FINAL,
+            FINISHED,
             FULL_OF_STARS_EVE1,
             FULL_OF_STARS_EVE2,
             FULL_OF_STARS_EVE3,
             FULL_OF_STARS_EVE4,
             FULL_OF_STARS_EVE5,
             FULL_OF_STARS_EVE6,
-            FULL_OF_STARS_KERBIN1,
-            FULL_OF_STARS_KERBIN2,
-            FULL_OF_STARS_KERBIN3,
-            FULL_OF_STARS_KERBIN4,
-            FULL_OF_STARS_FINAL,
-            FINISHED
         }
         public bool ChildChanged { get; set; }
 
         private const string STARJEB_MESSAGE =
 @"And so it was that {0} became an immortal being known as ""The Star Jeb"".  After the Star Jeb's transcendence, the Jool monolith disappeared - no one knows if it will ever reappear.
 
-As for the Star Jeb himself, he has the ability to advance Kerbal science and the Kerbal Space Program to great new heights.  However, he has done absolutely nothing.  In fact, rumor has it that he hasn’t even called his mother.";
+As for the Star Jeb, they have the ability to advance Kerbal science and the Kerbal Space Program to great new heights.  However, they've done absolutely nothing.  In fact, rumor has it that the Star Jeb hasn’t even called their mother.";
 
         private const float MONOLITH_DRAW_DISTANCE = 500000;
         private const float MONOLITH_DISCOVERY_DISTANCE = 50000;
-        private const float MONOLITH_TOO_CLOSE = 1000;
+        private const float MONOLITH_TOO_CLOSE = 2000;
 
         private Vessel monolith = null;
         public Vessel starJeb = null;
         public Vessel candidate = null;
         public string starJebName = "";
         public string candidateName = "";
-        private bool loadDistanceChanged = false;
-        private float origLoadDistance;
-        private float origUnloadDistance;
         private bool monolithDiscovered = false;
         private MonolithState currentState = MonolithState.STARTED;
         private float stepTime = 0;
@@ -451,6 +454,8 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                 case MonolithState.FULL_OF_STARS_EELOO3:
                     if (Time.fixedTime - stepTime > 5.5f)
                     {
+                        velocity = null;
+
                         // Done with Eeloo
                         nextState();
                     }
@@ -458,7 +463,6 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                 case MonolithState.FULL_OF_STARS_EVE1:
                     {
                         CelestialBody eve = FlightGlobals.Bodies.Where(b => b.name == "Eve").First();
-                        velocity = null;
                         Vector3 targetPosition = Destination.Value;
                         Vector3 normal = eve.GetSurfaceNVector(eveLatitude, eveLongitude);
                         startDistance = 10000000f;
@@ -565,12 +569,10 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
 
                         // Set us up a nice 4 radiuses away...
                         float distance = 4.0f * (float)kerbin.Radius;
-                        starJeb.situation = Vessel.Situations.ORBITING;
-                        starJeb.Landed = false;
-                        starJeb.orbit.referenceBody = kerbin;
                         starJeb.SetPosition(kerbin.transform.position + sunnySide * distance);
-                        starJeb.orbit.referenceBody = kerbin;
-                        starJeb.SetWorldVelocity(kerbin.getRFrmVel(starJeb.transform.position));
+
+                        // Hardcode an orbital velocity, because it's late and I'm tired
+                        starJeb.SetWorldVelocity(kerbin.getRFrmVel(starJeb.transform.position).normalized * 1085);
 
                         nextState();
                     }
@@ -595,10 +597,6 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                         // Turn into star jeb
                         CelestialBody kerbin = FlightGlobals.Bodies.Where(b => b.name == "Kerbin").First();
 
-                        // Stop rotating
-                        starJeb.angularVelocity = Vector3.zero;
-                        starJeb.rigidbody.angularVelocity = Vector3.zero;
-
                         starJeb.vesselName = "The Star Jeb";
                         Undress(starJeb.gameObject);
                         FlightCamera.fetch.SetCamCoordsFromPosition(starJeb.transform.position + (starJeb.transform.position - kerbin.transform.position).normalized * 1.5f);
@@ -611,13 +609,6 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                     {
                         CelestialBody kerbin = FlightGlobals.Bodies.Where(b => b.name == "Kerbin").First();
                         Vector3 camDirection = starJeb.transform.position + (starJeb.transform.position - kerbin.transform.position).normalized;
-
-                        starJeb.rigidbody.angularVelocity = Vector3.zero;
-                        starJeb.angularVelocity = Vector3.zero;
-                        starJeb.rigidbody.angularVelocity = Vector3.zero;
-                        //starJeb.transform.localRotation = Quaternion.Euler(180.0f, -25.0f, 90.0f);
-                        starJeb.transform.localRotation = FlightCamera.fetch.transform.localRotation *
-                            Quaternion.AngleAxis(90.0f, FlightCamera.fetch.transform.forward);
                     }
                     else
                     {
@@ -694,8 +685,6 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
         {
             base.OnUnregister();
             GameEvents.onCrewTransferred.Remove(new EventData<GameEvents.HostedFromToAction<ProtoCrewMember, Part>>.OnEvent(OnCrewTransferred));
-
-            ResetLoadDistance();
         }
 
         protected virtual void OnCrewTransferred(GameEvents.HostedFromToAction<ProtoCrewMember, Part> a)
@@ -806,13 +795,25 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
         {
  	        base.OnUpdate();
 
+            if (monolith == null && (HighLogic.LoadedScene == GameScenes.FLIGHT || HighLogic.LoadedScene == GameScenes.TRACKSTATION))
+            {
+                monolith = ContractVesselTracker.Instance.GetAssociatedVessel("Monolith");
+                if (monolith != null)
+                {
+                    monolith.vesselRanges.orbit.load = MONOLITH_DRAW_DISTANCE * 1.1f;
+                    monolith.vesselRanges.orbit.unload = MONOLITH_DRAW_DISTANCE * 1.05f;
+
+                    // Set monolith name to unknown
+                    if (!monolithDiscovered && monolith.vesselName != "???")
+                    {
+                        monolith.vesselName = "???";
+                        GameEvents.onVesselRename.Fire(new GameEvents.HostedFromToAction<Vessel, string>(monolith, "Monolith", "???"));
+                    }
+                }
+            }
+
             if (HighLogic.LoadedScene == GameScenes.FLIGHT && FlightGlobals.ActiveVessel != null)
             {
-                if (monolith == null)
-                {
-                    monolith = ContractVesselTracker.Instance.GetAssociatedVessel("Monolith");
-                }
-
                 // Set the load distance for the monolith to be much further
                 SetLoadDistance();
 
@@ -850,63 +851,16 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
 
         private void SetLoadDistance()
         {
-            if (currentState >= MonolithState.FULL_OF_STARS3)
+            // Check the distance
+            if (monolith != null)
             {
-                ResetLoadDistance();
-            }
-            else
-            {
-                // Check the distance
                 distance = Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, monolith.transform.position);
-                if (distance < MONOLITH_DRAW_DISTANCE)
+                if (!monolithDiscovered && distance < MONOLITH_DISCOVERY_DISTANCE)
                 {
-                    if (!monolithDiscovered && distance < MONOLITH_DISCOVERY_DISTANCE)
-                    {
-                        monolithDiscovered = true;
-                        monolith.vesselName = "Monolith";
-                        GameEvents.onVesselRename.Fire(new GameEvents.HostedFromToAction<Vessel, string>(monolith, "???", "Monolith"));
-                    }
-
-                    if (!loadDistanceChanged)
-                    {
-                        origLoadDistance = Vessel.loadDistance;
-                        origUnloadDistance = Vessel.unloadDistance;
-                    }
-
-                    if (distance > origLoadDistance)
-                    {
-                        loadDistanceChanged = true;
-                        Vessel.loadDistance = distance * 1.1f;
-                        Vessel.unloadDistance = distance * 1.05f;
-                    }
-                    else
-                    {
-                        ResetLoadDistance();
-                    }
+                    monolithDiscovered = true;
+                    monolith.vesselName = "Monolith";
+                    GameEvents.onVesselRename.Fire(new GameEvents.HostedFromToAction<Vessel, string>(monolith, "???", "Monolith"));
                 }
-                else
-                {
-                    ResetLoadDistance();
-                }
-
-                // Monolith name to unknown
-                if (!monolithDiscovered && monolith.vesselName != "???")
-                {
-                    monolith.vesselName = "???";
-                    GameEvents.onVesselRename.Fire(new GameEvents.HostedFromToAction<Vessel, string>(monolith, "Monolith", "???"));
-                }
-            }
-        }
-
-        private void ResetLoadDistance()
-        {
-            if (loadDistanceChanged)
-            {
-                LoggingUtil.LogVerbose(this, "Resetting the load distance to normal.");
-
-                Vessel.loadDistance = origLoadDistance;
-                Vessel.unloadDistance = origUnloadDistance;
-                loadDistanceChanged = false;
             }
         }
 
@@ -922,7 +876,5 @@ As for the Star Jeb himself, he has the ability to advance Kerbal science and th
                 renderer.enabled = false;
             }
         }
-
-
     }
 }
