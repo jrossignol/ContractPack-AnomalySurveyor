@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.1.1
+- Future proof Jool Monolith contract against changes upcoming in Contract Configurator 1.0.3.
+
 ContractPack-AnomalySurveyor 1.1.0
 - Jool Monolith fixes for KSP 1.0.
 - Fixed text in Kerbin Monolith contract (thanks khearn).
