@@ -1,3 +1,7 @@
+ContractPack-AnomalySurveyor 1.1.2
+- Increase contract rewards.
+- Clean up minor typos.
+
 ContractPack-AnomalySurveyor 1.1.1
 - Future proof Jool Monolith contract against changes upcoming in Contract Configurator 1.0.3.
 
