@@ -1,6 +1,3 @@
-ContractPack-AnomalySurveyor 1.2.1
-- Re-release with DDS textures.
-
 ContractPack-AnomalySurveyor 1.2.0
 - New agent!
 - Fix more typos (thanks Hellrespawn).
