@@ -1,4 +1,4 @@
-ContractPack-AnomalySurveyor 1.2.0
+ContractPack-AnomalySurveyor 1.2.2
 - New agent!
 - Fix more typos (thanks Hellrespawn).
 
