@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.2.3
+- Science nerf (thanks amorymeltzer)!
+
 ContractPack-AnomalySurveyor 1.2.2
 - New agent!
 - Fix more typos (thanks Hellrespawn).
