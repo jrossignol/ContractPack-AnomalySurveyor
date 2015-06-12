@@ -1,5 +1,6 @@
 ContractPack-AnomalySurveyor 1.2.3
 - Science nerf (thanks amorymeltzer)!
+- Fixed location of Mun Monolith TMA-5 (thanks Yoggy).
 
 ContractPack-AnomalySurveyor 1.2.2
 - New agent!
