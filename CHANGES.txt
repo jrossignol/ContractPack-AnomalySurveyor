@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.2.4
+- Convert agent icons to DDS.
+
 ContractPack-AnomalySurveyor 1.2.3
 - Science nerf (thanks amorymeltzer)!
 - Fixed location of Mun Monolith TMA-5 (thanks Yoggy).
