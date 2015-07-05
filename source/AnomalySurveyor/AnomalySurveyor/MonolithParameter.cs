@@ -169,7 +169,7 @@ As for the Star Jeb, they have the ability to advance Kerbal science and the Ker
         {
         }
 
-        protected override string GetTitle()
+        protected override string GetParameterTitle()
         {
             return "Investigate the monolith";
         }
