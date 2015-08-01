@@ -1,8 +1,8 @@
 ContractPack-AnomalySurveyor 1.2.3
+- Restored original behaviour of Mun monolith contract (both monoliths need to be visited instead of just one).
 - Science nerf (thanks amorymeltzer)!
 - Fixed location of Mun Monolith TMA-5 (thanks Yoggy).
 - Convert agent icons to DDS.
-- Recompile against Contract Configurator 1.5.1
 - Increased reward for Kerbin monolith contract.
 
 ContractPack-AnomalySurveyor 1.2.2
