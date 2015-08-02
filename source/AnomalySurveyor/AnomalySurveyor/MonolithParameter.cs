@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using UnityEngine;
 using KSP;
 using Contracts;
@@ -373,7 +374,7 @@ As for the Star Jeb, they have the ability to advance Kerbal science and the Ker
                         LoggingUtil.LogVerbose(this, "kick magnitude will be: " + velocity);
 
                         // Now offset him down so he doesn't actually hit Duna...
-                        starJeb.SetPosition(starJeb.transform.position + new Vector3(0.0f, -((float)duna.Radius + 45000), 0.0f));
+                        starJeb.SetPosition(starJeb.transform.position + new Vector3(0.0f, -((float)duna.Radius + 55000), 0.0f));
                         starJeb.SetWorldVelocity(duna.getRFrmVel(starJeb.transform.position));
 
                         nextState();
@@ -571,6 +572,13 @@ As for the Star Jeb, they have the ability to advance Kerbal science and the Ker
                         float distance = 4.0f * (float)kerbin.Radius;
                         starJeb.SetPosition(kerbin.transform.position + sunnySide * distance);
 
+                        // Orient him properly
+                        KerbalEVA keva = starJeb.FindPartModulesImplementing<KerbalEVA>().First();
+                        MethodInfo rotationMethod = typeof(KerbalEVA).GetMethod("correctGroundedRotation", BindingFlags.Instance | BindingFlags.NonPublic);
+                        starJeb.packed = true;
+                        rotationMethod.Invoke(keva, new object[] { });
+                        starJeb.packed = false;
+
                         // Hardcode an orbital velocity, because it's late and I'm tired
                         starJeb.SetWorldVelocity(kerbin.getRFrmVel(starJeb.transform.position).normalized * 1085);
 
@@ -583,6 +591,8 @@ As for the Star Jeb, they have the ability to advance Kerbal science and the Ker
                         CelestialBody kerbin = FlightGlobals.Bodies.Where(b => b.name == "Kerbin").First();
                         FlightCamera.fetch.setTarget(starJeb.transform);
                         FlightCamera.fetch.SetCamCoordsFromPosition(starJeb.transform.position + (starJeb.transform.position - kerbin.transform.position).normalized * 10.0f);
+
+                        starJeb.SetRotation(FlightCamera.fetch.transform.rotation * Quaternion.AngleAxis(180.0f, FlightCamera.fetch.transform.up));
 
                         // Make sure that the camera gets fixed
                         if (Time.fixedTime - stepTime > 0.1f)
