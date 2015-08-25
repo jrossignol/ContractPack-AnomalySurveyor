@@ -1,11 +1,11 @@
 ship = Monolith
-version = 1.0.0
+version = 1.0.4
 description = 
 type = VAB
 size = 222.3333,2001,889.3346
 PART
 {
-	part = mega.monolith_4294709530
+	part = mega.monolith_4294651992
 	partName = Part
 	pos = 0,15,0
 	attPos = 0,0,0
@@ -32,20 +32,5 @@ PART
 	}
 	PARTDATA
 	{
-	}
-	MODULE
-	{
-		name = ModuleTripLogger
-		isEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		Log
-		{
-			flight = 0
-		}
 	}
 }
