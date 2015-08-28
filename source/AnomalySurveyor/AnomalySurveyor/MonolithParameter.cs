@@ -118,11 +118,6 @@ namespace AnomalySurveyor
         }
         public bool ChildChanged { get; set; }
 
-        private const string STARJEB_MESSAGE =
-@"And so it was that {0} became an immortal being known as ""The Star Jeb"".  After the Star Jeb's transcendence, the Jool monolith disappeared - no one knows if it will ever reappear.
-
-As for the Star Jeb, they have the ability to advance Kerbal science and the Kerbal Space Program to great new heights.  However, they've done absolutely nothing.  In fact, rumor has it that the Star Jeb hasn’t even called their mother.";
-
         private const float MONOLITH_DRAW_DISTANCE = 500000;
         private const float MONOLITH_DISCOVERY_DISTANCE = 50000;
         private const float MONOLITH_TOO_CLOSE = 2000;
@@ -241,6 +236,7 @@ As for the Star Jeb, they have the ability to advance Kerbal science and the Ker
                         {
                             starJeb = candidate;
                             starJebName = candidateName;
+                            PersistentDataStore.Instance.Store<string>("starJebName", starJebName);
                             candidate = null;
                             return true;
                         }
@@ -635,8 +631,6 @@ As for the Star Jeb, they have the ability to advance Kerbal science and the Ker
                     }
                     return false;
                 case MonolithState.FULL_OF_STARS_FINAL:
-                    MessageSystem.Instance.AddMessage(new MessageSystem.Message("The Star Jeb is Born", String.Format(STARJEB_MESSAGE, starJebName),
-                        MessageSystemButton.MessageButtonColor.GREEN, MessageSystemButton.ButtonIcons.MESSAGE));
                     return true;
                 default:
                     return false;
