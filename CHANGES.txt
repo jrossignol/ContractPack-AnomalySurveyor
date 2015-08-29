@@ -1,5 +1,6 @@
 ContractPack-AnomalySurveyor 1.4.0
 - Added a bonus to the end of the final Monolith contract.
+- Change all contracts to use the new dialog system for completion flavour text.
 - Fixed Jool monoltih contract invisible parameters in Contract Window + (thanks 5thHorseman).
 - Minor fixes to log warnings for Monolith spawn in Jool contract (thanks Enceos).
 
