@@ -2,7 +2,7 @@
      "NAME":"Contract Pack: Anomaly Surveyor",
 	 "URL":"https://raw.githubusercontent.com/jrossignol/ContractPack-AnomalySurveyor/master/GameData/ContractPacks/AnomalySurveyor/ContractPack-AnomalySurveyor.version",
 	 "DOWNLOAD":"https://github.com/jrossignol/ContractPack-AnomalySurveyor/releases",
-     "CHANGE_LOG_URL":"https://raw.githubusercontent.com/jrossignol/ContractPack-AnomalySurveyor/1.3.0/CHANGES.txt",
+     "CHANGE_LOG_URL":"https://raw.githubusercontent.com/jrossignol/ContractPack-AnomalySurveyor/1.4.0/CHANGES.txt",
      "GITHUB":{
          "USERNAME":"jrossignol",
          "REPOSITORY":"ContractPack-AnomalySurveyor",
@@ -10,7 +10,7 @@
      },
      "VERSION":{
          "MAJOR":1,
-         "MINOR":3,
+         "MINOR":4,
          "PATCH":0,
          "BUILD":0
      },
