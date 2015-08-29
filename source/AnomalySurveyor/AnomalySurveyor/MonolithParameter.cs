@@ -135,6 +135,10 @@ namespace AnomalySurveyor
         private ConfigNode progressTreeBackup = null;
         private double eveLatitude, eveLongitude;
 
+        ParameterDelegate<MonolithParameter> evaParam;
+        ParameterDelegate<MonolithParameter> approachParam;
+        ParameterDelegate<MonolithParameter> fullofstarsParam;
+
         public Vector3? velocity = null;
         public Vector3? Destination
         {
@@ -175,20 +179,45 @@ namespace AnomalySurveyor
             if (ParameterCount < 1)
             {
                 LoggingUtil.LogVerbose(this, "Adding EVA parameter...");
-                AddParameter(new ParameterDelegate<MonolithParameter>("Send a Kerbal on EVA", x => CheckParameters(MonolithState.STARTED)));
-            }
+                evaParam = new ParameterDelegate<MonolithParameter>("Send a Kerbal on EVA", x => CheckParameters(MonolithState.STARTED));
+                AddParameter(evaParam);
 
-            if (ParameterCount < 2 && currentState >= MonolithState.EVA)
-            {
                 LoggingUtil.LogVerbose(this, "Adding approach parameter...");
-                AddParameter(new ParameterDelegate<MonolithParameter>("Approach the monolith with " + candidateName,
-                    x => CheckParameters(MonolithState.EVA)));
+                approachParam = new ParameterDelegate<MonolithParameter>("", x => !approachParam.hidden && CheckParameters(MonolithState.EVA));
+                approachParam.hidden = true;
+                AddParameter(approachParam);
+
+                LoggingUtil.LogVerbose(this, "Adding 'full of stars' parameter...");
+                fullofstarsParam = new ParameterDelegate<MonolithParameter>("...it's full of stars!", x => !fullofstarsParam.hidden && CheckParameters(MonolithState.FULL_OF_STARS_FINAL));
+                fullofstarsParam.hidden = true;
+                AddParameter(fullofstarsParam);
             }
 
-            if (ParameterCount < 3 && currentState >= MonolithState.FULL_OF_STARS1)
+            bool changeMade = false;
+            if (currentState >= MonolithState.EVA)
             {
-                LoggingUtil.LogVerbose(this, "Adding 'full of stars' parameter...");
-                AddParameter(new ParameterDelegate<MonolithParameter>("...it's full of stars!", x => CheckParameters(MonolithState.FULL_OF_STARS_FINAL)));
+                LoggingUtil.LogVerbose(this, "Unhiding approach parameter...");
+                if (approachParam.hidden)
+                {
+                    approachParam.SetTitle("Approach the monolith with " + candidateName);
+                    changeMade = true;
+                    approachParam.hidden = false;
+                }
+            }
+
+            if (currentState >= MonolithState.FULL_OF_STARS1)
+            {
+                LoggingUtil.LogVerbose(this, "Unhiding 'full of stars' parameter...");
+                if (fullofstarsParam.hidden)
+                {
+                    changeMade = true;
+                    fullofstarsParam.hidden = false;
+                }
+            }
+
+            if (changeMade)
+            {
+                ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
             }
         }
 
@@ -224,6 +253,7 @@ namespace AnomalySurveyor
                         candidate = FlightGlobals.ActiveVessel;
                         candidateName = candidate.vesselName;
                         LoggingUtil.LogVerbose(this, "Got an eva, starJeb = " + candidate.vesselName);
+                        nextState();
                         return true;
                     }
                     return false;
@@ -238,6 +268,7 @@ namespace AnomalySurveyor
                             starJebName = candidateName;
                             PersistentDataStore.Instance.Store<string>("starJebName", starJebName);
                             candidate = null;
+                            nextState();
                             return true;
                         }
                     }
@@ -631,6 +662,7 @@ namespace AnomalySurveyor
                     }
                     return false;
                 case MonolithState.FULL_OF_STARS_FINAL:
+                    nextState();
                     return true;
                 default:
                     return false;
@@ -822,11 +854,7 @@ namespace AnomalySurveyor
                 SetLoadDistance();
 
                 // Check our script progress
-                if (ParameterDelegate<MonolithParameter>.CheckChildConditions(this, this))
-                {
-                    nextState();
-                    ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
-                }
+                ParameterDelegate<MonolithParameter>.CheckChildConditions(this, this);
 
                 if (ChildChanged)
                 {
