@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.4.1
+- Fixed compatibility issue caused by Contract Configurator 1.7.3 (thanks kardan).
+
 ContractPack-AnomalySurveyor 1.4.0
 - Added a bonus to the end of the final Monolith contract.
 - Change all contracts to use the new dialog system for completion flavour text.
