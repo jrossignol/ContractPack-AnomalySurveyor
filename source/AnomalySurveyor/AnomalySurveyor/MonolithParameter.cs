@@ -900,9 +900,10 @@ namespace AnomalySurveyor
         private void Undress(GameObject kerbal)
         {
             foreach (Renderer renderer in kerbal.GetComponentsInChildren<Renderer>()
-                .Where(r => (r.name == "helmet") || (r.name == "visor") || r.name.StartsWith("jetpack_base") ||
-                    r.name.Contains("handle") || r.name.Contains("thruster") || r.name.Contains("tank") ||
-                    r.name.Contains("pivot") || r.name.EndsWith("_a01") || r.name.EndsWith("_b01")))
+                .Where(r => r.name == "kbEVA_flagDecals" || r.name == "helmet" || r.name == "visor" ||
+                    r.name.StartsWith("jetpack_base") || r.name.Contains("handle") || r.name.Contains("thruster") ||
+                    r.name.Contains("tank") || r.name.Contains("pivot") || r.name.EndsWith("_a01") ||
+                    r.name.EndsWith("_b01")))
             {
 
                 renderer.enabled = false;
