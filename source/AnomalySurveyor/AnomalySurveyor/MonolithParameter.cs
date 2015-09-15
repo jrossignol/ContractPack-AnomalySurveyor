@@ -8,6 +8,7 @@ using KSP;
 using Contracts;
 using ContractConfigurator;
 using ContractConfigurator.Parameters;
+using ContractConfigurator.Behaviour;
 
 namespace AnomalySurveyor
 {
@@ -20,7 +21,7 @@ namespace AnomalySurveyor
 
             void Start()
             {
-                LoggingUtil.LogVerbose(typeof(MonolithParameter), "VelocityHandler startup");
+                LoggingUtil.LogDebug(typeof(MonolithParameter), "VelocityHandler startup");
             }
 
             void FixedUpdate()
@@ -178,16 +179,16 @@ namespace AnomalySurveyor
         {
             if (ParameterCount < 1)
             {
-                LoggingUtil.LogVerbose(this, "Adding EVA parameter...");
+                LoggingUtil.LogDebug(this, "Adding EVA parameter...");
                 evaParam = new ParameterDelegate<MonolithParameter>("Send a Kerbal on EVA", x => CheckParameters(MonolithState.STARTED));
                 AddParameter(evaParam);
 
-                LoggingUtil.LogVerbose(this, "Adding approach parameter...");
+                LoggingUtil.LogDebug(this, "Adding approach parameter...");
                 approachParam = new ParameterDelegate<MonolithParameter>("", x => !approachParam.hidden && CheckParameters(MonolithState.EVA));
                 approachParam.hidden = true;
                 AddParameter(approachParam);
 
-                LoggingUtil.LogVerbose(this, "Adding 'full of stars' parameter...");
+                LoggingUtil.LogDebug(this, "Adding 'full of stars' parameter...");
                 fullofstarsParam = new ParameterDelegate<MonolithParameter>("...it's full of stars!", x => !fullofstarsParam.hidden && CheckParameters(MonolithState.FULL_OF_STARS_FINAL));
                 fullofstarsParam.hidden = true;
                 AddParameter(fullofstarsParam);
@@ -196,9 +197,9 @@ namespace AnomalySurveyor
             bool changeMade = false;
             if (currentState >= MonolithState.EVA)
             {
-                LoggingUtil.LogVerbose(this, "Unhiding approach parameter...");
                 if (approachParam.hidden)
                 {
+                    LoggingUtil.LogDebug(this, "Unhiding approach parameter...");
                     approachParam.SetTitle("Approach the monolith with " + candidateName);
                     changeMade = true;
                     approachParam.hidden = false;
@@ -207,9 +208,9 @@ namespace AnomalySurveyor
 
             if (currentState >= MonolithState.FULL_OF_STARS1)
             {
-                LoggingUtil.LogVerbose(this, "Unhiding 'full of stars' parameter...");
                 if (fullofstarsParam.hidden)
                 {
+                    LoggingUtil.LogDebug(this, "Unhiding 'full of stars' parameter...");
                     changeMade = true;
                     fullofstarsParam.hidden = false;
                 }
@@ -239,7 +240,7 @@ namespace AnomalySurveyor
             // Create the velocity change handler
             if (velHdlr == null)
             {
-                LoggingUtil.LogVerbose(this, "Adding VelocityHandler");
+                LoggingUtil.LogDebug(this, "Adding VelocityHandler");
                 velHdlr = MapView.MapCamera.gameObject.AddComponent<VelocityHandler>();
                 velHdlr.param = this;
             }
@@ -252,7 +253,7 @@ namespace AnomalySurveyor
                     {
                         candidate = FlightGlobals.ActiveVessel;
                         candidateName = candidate.vesselName;
-                        LoggingUtil.LogVerbose(this, "Got an eva, starJeb = " + candidate.vesselName);
+                        LoggingUtil.LogDebug(this, "Got an eva, starJeb = " + candidate.vesselName);
                         nextState();
                         return true;
                     }
@@ -264,11 +265,39 @@ namespace AnomalySurveyor
 
                         if (distance < 10000 && discoveryDistance > distance && Time.fixedTime - stepTime > 10.0f || distance < MONOLITH_TOO_CLOSE)
                         {
+                            // Store Star Jeb's name
                             starJeb = candidate;
                             starJebName = candidateName;
                             PersistentDataStore.Instance.Store<string>("starJebName", starJebName);
+
+                            // Store Star Jeb's friend's name
+                            ProtoCrewMember protoStarJeb = candidate.GetVesselCrew().First();
+                            if (discovery != null)
+                            {
+                                string trait = protoStarJeb.experienceTrait.TypeName == "Scientist" ? "Pilot" : "Scientist";
+                                ProtoCrewMember notStarJeb = discovery.GetVesselCrew().Where(pcm => pcm.experienceTrait.TypeName == trait).FirstOrDefault();
+                                if (notStarJeb != null)
+                                {
+                                    PersistentDataStore.Instance.Store<string>("notStarJebName", notStarJeb.name);
+                                }
+                            }
                             candidate = null;
                             nextState();
+
+                            // Set the right image (male vs. female) for the end sequence
+                            ConfiguredContract contract = Root as ConfiguredContract;
+                            DialogBox dialogBox = contract.Behaviours.Select(b => b as DialogBox).Where(b => b != null).FirstOrDefault();
+                            if (dialogBox != null)
+                            {
+                                FieldInfo detailsField = typeof(DialogBox).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).
+                                    Where(fi => fi.FieldType == typeof(List<DialogBox.DialogDetail>)).First();
+                                DialogBox.DialogDetail detail = ((List<DialogBox.DialogDetail>)detailsField.GetValue(dialogBox)).First();
+                                DialogBox.ImageSection starJebImage = detail.sections.First() as DialogBox.ImageSection;
+                                starJebImage.imageURL = protoStarJeb.gender == ProtoCrewMember.Gender.Male ?
+                                    "ContractPacks/AnomalySurveyor/Images/starjeb.dds.noload" :
+                                    "ContractPacks/AnomalySurveyor/Images/starjeb_female.dds.noload";
+                            }
+
                             return true;
                         }
                     }
@@ -290,7 +319,7 @@ namespace AnomalySurveyor
                         velocity = (starJeb.transform.position - (t > 1.0 ? jool.transform.position : closest)).normalized;
                         velocity += new Vector3(0.0f, 0.1f, 0.0f);
                         velocity *= 15000;
-                        LoggingUtil.LogVerbose(this, "kick magnitude will be: " + velocity);
+                        LoggingUtil.LogDebug(this, "kick magnitude will be: " + velocity);
                         nextState();
 
                         // Camera to target jool
@@ -306,7 +335,7 @@ namespace AnomalySurveyor
                         velocity = (starJeb.transform.position - jool.transform.position).normalized;
                         velocity += new Vector3(0.0f, 0.1f, 0.0f);
                         velocity *= 1500000;
-                        LoggingUtil.LogVerbose(this, "kick magnitude will be: " + velocity);
+                        LoggingUtil.LogDebug(this, "kick magnitude will be: " + velocity);
                         nextState();
                     }
                     return false;
@@ -317,7 +346,7 @@ namespace AnomalySurveyor
                         CelestialBody jool = FlightGlobals.Bodies.Where(b => b.name == "Jool").First();
                         velocity = (starJeb.transform.position - jool.transform.position).normalized;
                         velocity *= 20000000;
-                        LoggingUtil.LogVerbose(this, "kick magnitude will be: " + velocity);
+                        LoggingUtil.LogDebug(this, "kick magnitude will be: " + velocity);
                         nextState();
                     }
                     return false;
@@ -328,7 +357,7 @@ namespace AnomalySurveyor
                         CelestialBody jool = FlightGlobals.Bodies.Where(b => b.name == "Jool").First();
                         velocity = (starJeb.transform.position - jool.transform.position).normalized;
                         velocity *= 200000000;
-                        LoggingUtil.LogVerbose(this, "kick magnitude will be: " + velocity);
+                        LoggingUtil.LogDebug(this, "kick magnitude will be: " + velocity);
                         nextState();
                     }
                     return false;
@@ -357,7 +386,7 @@ namespace AnomalySurveyor
 
                         velocity = (dres.transform.position - starJeb.transform.position + sunnySide * ((float)dres.Radius)).normalized;
                         velocity *= distance / 3.0f;
-                        LoggingUtil.LogVerbose(this, "kick magnitude will be: " + velocity);
+                        LoggingUtil.LogDebug(this, "kick magnitude will be: " + velocity);
                         starJeb.SetWorldVelocity(dres.getRFrmVel(starJeb.transform.position));
                         nextState();
                     }
@@ -398,7 +427,7 @@ namespace AnomalySurveyor
                         // Go straight at Duna
                         velocity = (duna.transform.position - starJeb.transform.position).normalized;
                         velocity *= distance / 3.0f;
-                        LoggingUtil.LogVerbose(this, "kick magnitude will be: " + velocity);
+                        LoggingUtil.LogDebug(this, "kick magnitude will be: " + velocity);
 
                         // Now offset him down so he doesn't actually hit Duna...
                         starJeb.SetPosition(starJeb.transform.position + new Vector3(0.0f, -((float)duna.Radius + 55000), 0.0f));
@@ -450,7 +479,7 @@ namespace AnomalySurveyor
                         // Go straight at Eeloo
                         velocity = (eeloo.transform.position - starJeb.transform.position).normalized;
                         velocity *= distance / 3.0f;
-                        LoggingUtil.LogVerbose(this, "kick magnitude will be: " + velocity);
+                        LoggingUtil.LogDebug(this, "kick magnitude will be: " + velocity);
 
                         // Now offset him down so he doesn't actually hit Eeloo...
                         starJeb.SetPosition(starJeb.transform.position + sunnySide * ((float)eeloo.Radius * 1.5f));
@@ -774,7 +803,6 @@ namespace AnomalySurveyor
             }
         }
 
-
         protected override void OnParameterSave(ConfigNode node)
         {
             node.AddValue("monolithDiscovered", monolithDiscovered);
@@ -877,7 +905,7 @@ namespace AnomalySurveyor
         {
             stepTime = Time.fixedTime;
             currentState++;
-            LoggingUtil.LogVerbose(this, "Moved to state: " + currentState);
+            LoggingUtil.LogDebug(this, "Moved to state: " + currentState);
             CreateDelegates();
         }
 

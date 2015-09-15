@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.4.2
+- Affirmative action - Female Kerbals now get their own image for the final contract.
+
 ContractPack-AnomalySurveyor 1.4.1
 - Fixed compatibility issue caused by Contract Configurator 1.7.3 (thanks kardan).
 
