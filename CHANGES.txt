@@ -1,5 +1,8 @@
+ContractPack-AnomalySurveyor 1.4.4
+- Recompile for KSP 1.1.3
+
 ContractPack-AnomalySurveyor 1.4.3
-- Recompile for KSP 1.1.x
+- Recompile for KSP 1.1.2
 
 ContractPack-AnomalySurveyor 1.4.2
 - Affirmative action - Female Kerbals now get their own image for the final contract.
