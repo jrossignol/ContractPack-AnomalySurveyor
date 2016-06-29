@@ -1,3 +1,10 @@
+ContractPack-AnomalySurveyor 1.5.0
+- New contract for Moho anomaly.
+- New contract for Tylo anomaly.
+- Slight rework to monolith series of contracts.
+- More spoiler proofing.
+- Changed text on pyramid contract.
+
 ContractPack-AnomalySurveyor 1.4.4
 - Recompile for KSP 1.1.3
 
@@ -13,7 +20,7 @@ ContractPack-AnomalySurveyor 1.4.1
 ContractPack-AnomalySurveyor 1.4.0
 - Added a bonus to the end of the final Monolith contract.
 - Change all contracts to use the new dialog system for completion flavour text.
-- Fixed Jool monoltih contract invisible parameters in Contract Window + (thanks 5thHorseman).
+- Fixed Jool monolith contract invisible parameters in Contract Window + (thanks 5thHorseman).
 - Minor fixes to log warnings for Monolith spawn in Jool contract (thanks Enceos).
 
 ContractPack-AnomalySurveyor 1.3.0
