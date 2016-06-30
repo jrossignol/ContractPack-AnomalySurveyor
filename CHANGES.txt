@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.5.1
+- Fixed waypoint on pyramid contract (thanks 5thHorseman).
+
 ContractPack-AnomalySurveyor 1.5.0
 - New contract for Moho anomaly.
 - New contract for Tylo anomaly.
