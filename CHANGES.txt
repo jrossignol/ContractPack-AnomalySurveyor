@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.6.1
+- Increased distance tolerance for Mun arch contracts (thanks 5thHorseman).
+
 ContractPack-AnomalySurveyor 1.6.0
 - Bigger rework to monolith contracts.  There is now one monolith to visit per contract, but not all monoliths need to be visited to progress the story.  As the story progresses, unvisited monoliths remain available.
 - Fixed waypoint on pyramid contract (thanks 5thHorseman).
