@@ -2,6 +2,7 @@ ContractPack-AnomalySurveyor 1.7.0
 - Overhaul for new Mission Control in Contract Configurator 1.15.x.
 - Increased distance tolerance for Mun arch contracts (thanks 5thHorseman).
 - Fixed text for TMA-1 (thanks 5thHorseman).
+- Improved agency icon.
 
 ContractPack-AnomalySurveyor 1.6.0
 - Bigger rework to monolith contracts.  There is now one monolith to visit per contract, but not all monoliths need to be visited to progress the story.  As the story progresses, unvisited monoliths remain available.
