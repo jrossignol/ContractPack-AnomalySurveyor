@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 1.7.1
+- Added loading tip.
+
 ContractPack-AnomalySurveyor 1.7.0
 - Overhaul for new Mission Control in Contract Configurator 1.15.x.
 - Increased distance tolerance for Mun arch contracts (thanks 5thHorseman).
