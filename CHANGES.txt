@@ -1,5 +1,6 @@
 ContractPack-AnomalySurveyor 1.7.1
 - Added loading tip.
+- Changed Moho orbit requirement to a flyby.
 
 ContractPack-AnomalySurveyor 1.7.0
 - Overhaul for new Mission Control in Contract Configurator 1.15.x.
