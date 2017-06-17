@@ -323,7 +323,7 @@ namespace AnomalySurveyor
                         nextState();
 
                         // Camera to target jool
-                        FlightCamera.fetch.setTarget(starJeb.transform);
+                        FlightCamera.SetTarget(starJeb.transform);
                         FlightCamera.fetch.SetCamCoordsFromPosition((starJeb.transform.position - jool.transform.position).normalized * 25.0f);
                     }
                     return false;
@@ -395,7 +395,7 @@ namespace AnomalySurveyor
                     {
                         // Camera to target Dres - do this on a seperate update to allow KSP to catch up
                         CelestialBody dres = FlightGlobals.Bodies.Where(b => b.name == "Dres").First();
-                        FlightCamera.fetch.setTarget(starJeb.transform);
+                        FlightCamera.SetTarget(starJeb.transform);
                         FlightCamera.fetch.SetCamCoordsFromPosition(starJeb.transform.position + (starJeb.transform.position - dres.transform.position).normalized * 10.0f);
 
                         // Make sure that the camera gets fixed
@@ -440,7 +440,7 @@ namespace AnomalySurveyor
                     {
                         // Camera to target Duna - do this on a seperate update to allow KSP to catch up
                         CelestialBody duna = FlightGlobals.Bodies.Where(b => b.name == "Duna").First();
-                        FlightCamera.fetch.setTarget(starJeb.transform);
+                        FlightCamera.SetTarget(starJeb.transform);
                         FlightCamera.fetch.SetCamCoordsFromPosition(starJeb.transform.position + (starJeb.transform.position - duna.transform.position).normalized * 25.0f);
 
                         // Make sure that the camera gets fixed
@@ -498,7 +498,7 @@ namespace AnomalySurveyor
                         Vector3 awayFromSun = sun.transform.position - eeloo.transform.position;
                         awayFromSun.Normalize();
 
-                        FlightCamera.fetch.setTarget(starJeb.transform);
+                        FlightCamera.SetTarget(starJeb.transform);
                         FlightCamera.fetch.SetCamCoordsFromPosition(starJeb.transform.position + awayFromSun * 50.0f);
 
                         // Make sure that the camera gets fixed
@@ -536,7 +536,7 @@ namespace AnomalySurveyor
                         Vector3 awayFromEve = starJeb.transform.position - eve.transform.position;
                         awayFromEve.Normalize();
 
-                        FlightCamera.fetch.setTarget(starJeb.transform);
+                        FlightCamera.SetTarget(starJeb.transform);
                         FlightCamera.fetch.SetCamCoordsFromPosition(starJeb.transform.position + awayFromEve * 15.0f);
 
                         // Make sure that the camera gets fixed
@@ -645,7 +645,7 @@ namespace AnomalySurveyor
                     {
                         // Camera to target kerbin - do this on a seperate update to allow KSP to catch up
                         CelestialBody kerbin = FlightGlobals.Bodies.Where(b => b.name == "Kerbin").First();
-                        FlightCamera.fetch.setTarget(starJeb.transform);
+                        FlightCamera.SetTarget(starJeb.transform);
                         FlightCamera.fetch.SetCamCoordsFromPosition(starJeb.transform.position + (starJeb.transform.position - kerbin.transform.position).normalized * 10.0f);
 
                         starJeb.SetRotation(FlightCamera.fetch.transform.rotation * Quaternion.AngleAxis(180.0f, FlightCamera.fetch.transform.up));
