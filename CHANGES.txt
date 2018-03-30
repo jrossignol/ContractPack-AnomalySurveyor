@@ -1,4 +1,5 @@
 ContractPack-AnomalySurveyor 1.7.1
+- Disabled Jool contract (temporary).
 - Added loading tip.
 - Changed Moho orbit requirement to a flyby.
 
