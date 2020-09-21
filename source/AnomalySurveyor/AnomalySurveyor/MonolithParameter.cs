@@ -864,8 +864,8 @@ namespace AnomalySurveyor
                 monolith = ContractVesselTracker.Instance.GetAssociatedVessel("Monolith");
                 if (monolith != null)
                 {
-                    monolith.vesselRanges.orbit.load = MONOLITH_DRAW_DISTANCE * 1.1f;
-                    monolith.vesselRanges.orbit.unload = MONOLITH_DRAW_DISTANCE * 1.05f;
+                    monolith.vesselRanges.orbit.load = MONOLITH_DRAW_DISTANCE * 1.05f;
+                    monolith.vesselRanges.orbit.unload = MONOLITH_DRAW_DISTANCE * 1.1f;
 
                     // Set monolith name to unknown
                     if (!monolithDiscovered && monolith.vesselName != "???")

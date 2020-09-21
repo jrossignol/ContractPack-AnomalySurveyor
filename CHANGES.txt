@@ -1,3 +1,6 @@
+ContractPack-AnomalySurveyor 2.0.0
+- Fixed Jool contract.
+
 ContractPack-AnomalySurveyor 1.7.1
 - Disabled Jool contract (temporary).
 - Added loading tip.
