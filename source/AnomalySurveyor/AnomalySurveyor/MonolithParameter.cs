@@ -218,7 +218,7 @@ namespace AnomalySurveyor
 
             if (changeMade)
             {
-                ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
+                GameEvents.Contract.onParameterChange.Fire(Root, this);
             }
         }
 
@@ -263,7 +263,7 @@ namespace AnomalySurveyor
                         Vessel discovery = ContractVesselTracker.Instance.GetAssociatedVessel("Discovery One");
                         float discoveryDistance = discovery == null ? 10000 : Vector3.Distance(discovery.transform.position, candidate.transform.position);
 
-                        if (distance < 10000 && discoveryDistance > distance && Time.fixedTime - stepTime > 10.0f || distance < MONOLITH_TOO_CLOSE)
+                        if ((distance < 10000 && discoveryDistance > distance && Time.fixedTime - stepTime > 10.0f) || distance < MONOLITH_TOO_CLOSE)
                         {
                             // Store Star Jeb's name
                             starJeb = candidate;
@@ -285,17 +285,24 @@ namespace AnomalySurveyor
                             nextState();
 
                             // Set the right image (male vs. female) for the end sequence
-                            ConfiguredContract contract = Root as ConfiguredContract;
-                            DialogBox dialogBox = contract.Behaviours.Select(b => b as DialogBox).Where(b => b != null).FirstOrDefault();
-                            if (dialogBox != null)
+                            try
                             {
-                                FieldInfo detailsField = typeof(DialogBox).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).
-                                    Where(fi => fi.FieldType == typeof(List<DialogBox.DialogDetail>)).First();
-                                DialogBox.DialogDetail detail = ((List<DialogBox.DialogDetail>)detailsField.GetValue(dialogBox)).First();
-                                DialogBox.ImageSection starJebImage = detail.sections.First() as DialogBox.ImageSection;
-                                starJebImage.imageURL = protoStarJeb.gender == ProtoCrewMember.Gender.Male ?
-                                    "ContractPacks/AnomalySurveyor/Images/starjeb.dds.noload" :
-                                    "ContractPacks/AnomalySurveyor/Images/starjeb_female.dds.noload";
+                                ConfiguredContract contract = Root as ConfiguredContract;
+                                DialogBox dialogBox = contract.Behaviours.Select(b => b as DialogBox).Where(b => b != null).FirstOrDefault();
+                                if (dialogBox != null)
+                                {
+                                    FieldInfo detailsField = typeof(DialogBox).GetFields(BindingFlags.Instance | BindingFlags.NonPublic).
+                                        Where(fi => fi.FieldType == typeof(List<DialogBox.DialogDetail>)).First();
+                                    DialogBox.DialogDetail detail = ((List<DialogBox.DialogDetail>)detailsField.GetValue(dialogBox)).First();
+                                    DialogBox.ImageSection starJebImage = detail.sections.First() as DialogBox.ImageSection;
+                                    starJebImage.imageURL = protoStarJeb.gender == ProtoCrewMember.Gender.Male ?
+                                        "ContractPacks/AnomalySurveyor/Images/starjeb.png" :
+                                        "ContractPacks/AnomalySurveyor/Images/starjeb_female.png";
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                LoggingUtil.LogWarning(this, "Unable to set Star Jeb image: " + e.Message);
                             }
 
                             return true;
@@ -780,7 +787,7 @@ namespace AnomalySurveyor
                 candidateName = eva.vesselName;
 
                 // Force a display update
-                ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
+                GameEvents.Contract.onParameterChange.Fire(Root, this);
             }
         }
 
@@ -799,7 +806,7 @@ namespace AnomalySurveyor
                 }
 
                 // Force a display update
-                ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
+                GameEvents.Contract.onParameterChange.Fire(Root, this);
             }
         }
 
@@ -886,7 +893,7 @@ namespace AnomalySurveyor
 
                 if (ChildChanged)
                 {
-                    ContractConfigurator.ContractConfigurator.OnParameterChange.Fire(Root, this);
+                    GameEvents.Contract.onParameterChange.Fire(Root, this);
                     ChildChanged = false;
                 }
 

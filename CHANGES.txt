@@ -1,3 +1,13 @@
+ContractPack-AnomalySurveyor 2.1.0
+- Updated for KSP 1.12.x.
+- Fixed SCANsat.cfg Module Manager syntax (GitHub #15).
+- Fixed operator precedence bug in monolith approach logic.
+- Hardened Jool monolith DialogBox reflection against newer CC versions.
+- Updated deprecated ContractConfigurator API calls.
+- Updated Monolith craft file to modern format.
+- Fixed typo "Vist TMA-5" in Mun monolith contract.
+- Converted Star Jeb images from .dds.noload to .png for CC TextureUtil compatibility.
+
 ContractPack-AnomalySurveyor 2.0.0
 - Fixed Jool contract.
 
