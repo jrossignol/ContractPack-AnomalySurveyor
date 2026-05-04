@@ -52,6 +52,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnomalyScanParameter.cs" />
+    <Compile Include="AnomalyScanFactory.cs" />
     <Compile Include="MonolithParameter.cs" />
     <Compile Include="MonolithFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

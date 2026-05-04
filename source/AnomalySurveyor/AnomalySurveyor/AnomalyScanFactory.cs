@@ -10,19 +10,23 @@ using ContractConfigurator;
 
 namespace AnomalySurveyor
 {
-    class MonolithFactory : ParameterFactory
+    class AnomalyScanFactory : ParameterFactory
     {
+        string vessel = null;
+
         public override bool Load(ConfigNode configNode)
         {
             // Load base class
             bool valid = base.Load(configNode);
+
+            valid &= ConfigNodeUtil.ParseValue<string>(configNode, "vessel", x => vessel = x, this, (string)null);
 
             return valid;
         }
 
         public override ContractParameter Generate(Contract contract)
         {
-            return new MonolithParameter();
+            return new AnomalyScanParameter(vessel);
         }
     }
 }
