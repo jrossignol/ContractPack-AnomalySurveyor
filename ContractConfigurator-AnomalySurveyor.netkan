@@ -6,7 +6,7 @@
     "abstract": "Contracts to guide you to the various easter eggs in the game.",
     "license": "CC-BY-NC-SA-4.0",
     "release_status": "stable",
-    "author": "nightingale",
+    "author": [ "nightingale", "badgkat" ],
     "$vref": "#/ckan/ksp-avc",
     "depends": [
         { "name": "ContractConfigurator" },
